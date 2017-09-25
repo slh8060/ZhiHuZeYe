@@ -56,7 +56,11 @@
                 type: 'get',
                 data: 'p='+dataBase64,
                 success: function (results) {
-                   alert(results)
+                    if (results.code == 200) {
+                        alert('登录成功,'+results.data);
+                    } else {
+                        alert(results.errorMsg);
+                    }
                 },
                 error: function (error) {
                     alert('error:'+error);
