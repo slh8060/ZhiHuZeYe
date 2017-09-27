@@ -4,18 +4,17 @@ const router = express.Router();
 const mysql = require('mysql');
 const dbConfig = require('../../db/dbConfig');
 const userSQL = require('../../db/userSQL');
+var debug = require('debug')('...zhihuzeye:serv1er');
 // 使用DBConfig.js的配置信息创建一个MySQL连接池
 const pool = mysql.createPool(dbConfig.mysql);
 
 
-/* GET users listing. */
-router.get('/users', function (req, res, next) {
-    res.send('respond with a resource');
+router.get('/login',function (req,res) {
+   res.render('index');
 });
 
-
-router.all('/login', function (req, res) {
-    let paramStr = new Buffer(req.query.p, 'base64').toString();//Base64解码,结果为：{"username":"qzsang","password":"123456"}
+router.post('/login', function (req, res) {
+    let paramStr = new Buffer(req.body.p, 'base64').toString();//Base64解码,结果为：{"username":"qzsang","password":"123456"}
     let param = JSON.parse(paramStr);//Json 字符串转为对象
     let userName = param.username;
     let userPwd = param.userpwd;
@@ -28,7 +27,7 @@ router.all('/login', function (req, res) {
         res.send(results);
     } else {
         pool.getConnection(function (err, connection) {
-            connection.query(userSQL.selectUser,userName, function (err, result) {
+            connection.query(userSQL.selectUserOne,userName, function (err, result) {
                 if (result.length != 0) {
                     if (result[0]._pwd == userPwd) {
                         results.code = 200;
@@ -53,7 +52,44 @@ router.all('/login', function (req, res) {
         });
     }
 
+});
 
+router.get('/regist',function (req,res) {
+   res.render('regist');
+
+});
+
+router.post('/regist',function (req,res) {
+    let paramStr = new Buffer(req.body.p, 'base64').toString();//Base64解码,结果为：{"username":"qzsang","password":"123456"}
+    let param = JSON.parse(paramStr);//Json 字符串转为对象
+    let name = param.username;
+    let pwd = param.userpwd;
+    let results = {};
+    console.log('param:'+paramStr);
+    pool.getConnection(function (err,connection) {
+        connection.query(userSQL.selectUserOne,name,function (err,result) {
+            if (result.length != 0){ //用户名已存在
+                results.code = 3;
+                results.errorMsg = "用户名已存在";
+                res.send(results);
+
+            } else {
+                connection.query(userSQL.insertUserOne,[name,pwd],function (err,result) {
+                    results.code = 200;
+                    data = {
+                        "username":name,
+                        "userid":result.insertId
+                    };
+                    results.data = new Buffer(JSON.stringify(data)).toString('base64');
+                    res.send(results);
+
+                })
+            }
+            connection.release();
+
+        });
+
+    })
 });
 
 module.exports = router;

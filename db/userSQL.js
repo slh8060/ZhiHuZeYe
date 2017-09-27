@@ -3,8 +3,12 @@
  */
 
 let UserSQL = {
-    select:'select * from user_table',
-    selectUser:'select _id,_pwd from user_table where _name = ? ',
-};
+    selectUserAll:'select * from user_table',
+    selectUserOne:'select _id,_pwd from user_table where _name = ? ',
+    insertUserOne:'insert into user_table(_name,_pwd) values(?,?)'
 
+};
+function _compile(s) {
+
+}
 module.exports = UserSQL;

@@ -5,6 +5,7 @@
     <title>Title</title>
 </head>
 <body>
+<h1>Login</h1>
 <form action="">
     <div class="">
         <label for="">userName:</label>
@@ -15,33 +16,17 @@
         <input class="pwd-ipt" type="password">
     </div>
     <div>
+        <a type="button" href="/regist">regist</a>
         <button class="submit" type="submit">submit</button>
         <button type="reset">reset</button>
     </div>
 </form>
 <script src="libs/jquery/v1.12.4/jquery.min.js"></script>
 <script src="libs/jquery.base64/jquery.base64.js"></script>
+<script src="src/js/common.js"></script>
+
 <script>
     $(function () {
-        function encodeBase64(mingwen,times){
-            var code="";
-            var num=1;
-            if(typeof times=='undefined'||times==null||times==""){
-                num=1;
-            }else{
-                var vt=times+"";
-                num=parseInt(vt);
-            }
-            if(typeof mingwen=='undefined'||mingwen==null||mingwen==""){
-            }else{
-                $.base64.utf8encode = true;
-                code=mingwen;
-                for(var i=0;i<num;i++){
-                    code=$.base64.btoa(code);
-                }
-            }
-            return code;
-        };
 
         $('.submit').on('click', function () {
             var name = $('.name-ipt').val();
@@ -52,9 +37,11 @@
             };
             var dataBase64=encodeBase64(JSON.stringify(data));//eyJ1c2VybmFtZSI6InF6cyIsInVzZXJwd2QiOiIxMjMifQ==
             $.ajax({
-                url: "http://localhost:3000/login",
-                type: 'get',
-                data: 'p='+dataBase64,
+                url: "/login",
+                type: 'post',
+                data: {
+                    'p': dataBase64
+                },
                 success: function (results) {
                     if (results.code == 200) {
                         alert('登录成功,'+results.data);
