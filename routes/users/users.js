@@ -4,13 +4,12 @@ const router = express.Router();
 const mysql = require('mysql');
 const dbConfig = require('../../db/dbConfig');
 const userSQL = require('../../db/userSQL');
-var debug = require('debug')('...zhihuzeye:serv1er');
 // 使用DBConfig.js的配置信息创建一个MySQL连接池
 const pool = mysql.createPool(dbConfig.mysql);
 
 
 router.get('/login',function (req,res) {
-   res.render('index');
+   res.render('login');
 });
 
 router.post('/login', function (req, res) {
